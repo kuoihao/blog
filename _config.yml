@@ -1,0 +1,15 @@
+title: My Blog
+author: GuoYiHao
+description: This is my blog where I write about programming and other topics.
+
+# Build settings
+markdown: kramdown
+permalink: /:title/
+
+# Sitemap and SEO
+sitemap:
+  exclude:
+  - /404.html
+
+# Analytics
+google_analytics: UA-123456-7
