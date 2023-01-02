@@ -44,10 +44,9 @@
   url: https://atlas7.github.io/
   gh_user: Atlas7
   repo: atlas7.github.io
-  img: /static/assets/img/landing/avatar.jpg
+  img: /static/assets/img/landing/avataryuan.jpg
   desc: >
-    (aka this website) My attempt to build a portfolio website with Jekyll and GitHub Pages.
-    It uses the beautiful Jalpc theme.
+    借鉴了这位大佬的主题，来完成这个网页
 
 # - name: Friends of Russia Dock Woodland (fordw.org)
 # #  i18n:

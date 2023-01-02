@@ -2,10 +2,10 @@
 # if you don't have language feature(language.yml is empty), ignore "i18n" items
 
 - name:
-    detail: Imperial College London
+    detail: 描述
   desc:
     detail: >
-      MEng Aeronautical Engineering (2:1). 
+      细节
   date:
     detail: Aug 2004 - Aug 2008, London
   job:
@@ -13,10 +13,10 @@
   icon: fa-plus-square
 
 - name:
-    detail: Cathay Pacific Airways
+    detail: 描述
   desc:
     detail: >
-      Engineer at Cathay Pacific Engineering Department (Power-plant Team)
+      细节
   date:
     detail: Jul 2007 - Aug 2008, Hong Kong
   job:
