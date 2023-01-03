@@ -13,9 +13,9 @@ img_path: /static/assets/img/blog  # /homepage/static/assets/img/blog
 
 # author -- index page "about me" section
 author:  # change following line to your infomation.
-  name: YiHao  # Be used at blog posts' author.
-  first_name: Yi  # Be used at index page about me section.
-  last_name: Hao  # Be used at index page about me section.
+  name: GuoYiHao  # Be used at blog posts' author.
+  first_name: YiHao  # Be used at index page about me section.
+  last_name: Guo  # Be used at index page about me section.
   avatar: /static/assets/img/landing/avatar.jpg  # upload your avatar at directory and edit it.
   github_username: Atlas7  # Leave blank if you don't have now
   linkedin_id: johnnycnchan # Leave blank if you don't have now
