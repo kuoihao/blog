@@ -11,7 +11,7 @@ icon: icon-html
 
 ##配置cpp
 
->首先,推荐大家使用Clion(jrtbrain家族)  
+>首先,推荐大家使用Clion(jetbrain家族)  
 >我自己的vscode环境配置如下，大家可以阅读
 >或自行观看，网址：https://code.visualstudio.com/docs/languages/cpp
 
