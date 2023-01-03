@@ -35,12 +35,12 @@ author:  # change following line to your infomation.
     - name: icon-apache
   desc: SomeBody  # Describe yourself.
 
-layout: default
-comment: true
+# layout: default
+# comment: true
+# disqus:  # if you wanna comment feature, go to https://disqus.com/ to get your configuration; if not, comment following two lines.
+#  name: GuoYiHao
 
 
-disqus:  # if you wanna comment feature, go to https://disqus.com/ to get your configuration; if not, comment following two lines.
- name: GuoYiHao
 
 # analytics
 #google analytics
