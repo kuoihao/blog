@@ -10,5 +10,6 @@ icon: icon-html
 ---
 
 ##这里是评论策略(comment-policy)
->不要键政/Don't discuss politics
+>不要键政/Don't discuss politics  
+
 >友好交谈/do whatever you like unless the first line
