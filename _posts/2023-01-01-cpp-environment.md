@@ -4,10 +4,12 @@ title:  "配置c/cpp环境"
 date:   2023-01-02 23:00:00
 desc: "配置c/cpp环境"
 keywords: "c,cpp，environment"
-categories: [cpp]
+categories: [CPP]
 tags: [c,cpp，environment]
 icon: icon-html
 ---
+
+##配置cpp
 
 >首先,推荐大家使用Clion(jrtbrain家族)  
 >我自己的vscode环境配置如下，大家可以阅读
