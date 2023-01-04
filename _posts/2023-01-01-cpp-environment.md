@@ -32,7 +32,7 @@ C/C++ support for Visual Studio Code is provided by a [Microsoft C/C++ extension
 
 After you install the extension, when you open or create a `*.cpp` file, you will have syntax highlighting (colorization), smart completions and hovers (IntelliSense), and error checking.
 
-![C++ language features]<img src="https://code.visualstudio.com/assets/docs/languages/cpp/msg-intellisense.png" style="zoom: 33%;" />
+![C++ language features]<img src="https://code.visualstudio.com/assets/docs/languages/cpp/msg-intellisense.png" style="zoom: 80%;" />
 
 ## [Install a compiler](https://code.visualstudio.com/docs/languages/cpp#_install-a-compiler)
 
@@ -173,7 +173,8 @@ You can find more documentation on using the Microsoft C/C++ extension under the
 -   [Settings](https://code.visualstudio.com/docs/cpp/customize-default-settings-cpp)
 -   [FAQ](https://code.visualstudio.com/docs/cpp/faq-cpp)
 
-![C++ TOC on code.visualstudio.com]<img src=https://code.visualstudio.com/assets/docs/languages/cpp/cpp-toc.png  style="zoom: 33%;" />
+
+<img src=https://code.visualstudio.com/assets/docs/languages/cpp/cpp-toc.png  style="zoom: 33%;" />
 
 ## [Remote Development](https://code.visualstudio.com/docs/languages/cpp#_remote-development)
 
