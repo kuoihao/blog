@@ -32,7 +32,7 @@ C/C++ support for Visual Studio Code is provided by a [Microsoft C/C++ extension
 
 After you install the extension, when you open or create a `*.cpp` file, you will have syntax highlighting (colorization), smart completions and hovers (IntelliSense), and error checking.
 
-![C++ language features](https://code.visualstudio.com/assets/docs/languages/cpp/msg-intellisense.png)
+![C++ language features]<img src="https://code.visualstudio.com/assets/docs/languages/cpp/msg-intellisense.png" style="zoom: 33%;" />
 
 ## [Install a compiler](https://code.visualstudio.com/docs/languages/cpp#_install-a-compiler)
 
@@ -110,9 +110,9 @@ The "code ." command opens VS Code in the current working folder, which becomes 
 
 Now create a new file called `helloworld.cpp` with the **New File** button in the File Explorer or **File** > **New File** command.
 
-![File Explorer New File button](https://code.visualstudio.com/assets/docs/languages/cpp/new-file.png)
+![File Explorer New File button]<img src=https://code.visualstudio.com/assets/docs/languages/cpp/new-file.png  style="zoom: 90%;" />
 
-![helloworld.cpp file](https://code.visualstudio.com/assets/docs/languages/cpp/hello-world-cpp.png)
+![helloworld.cpp file]<img src="https://code.visualstudio.com/assets/docs/languages/cpp/hello-world-cpp.png"  style="zoom: 33%;" />
 
 ### [Add Hello World source code](https://code.visualstudio.com/docs/languages/cpp#_add-hello-world-source-code)
 
@@ -173,7 +173,7 @@ You can find more documentation on using the Microsoft C/C++ extension under the
 -   [Settings](https://code.visualstudio.com/docs/cpp/customize-default-settings-cpp)
 -   [FAQ](https://code.visualstudio.com/docs/cpp/faq-cpp)
 
-![C++ TOC on code.visualstudio.com](https://code.visualstudio.com/assets/docs/languages/cpp/cpp-toc.png)
+![C++ TOC on code.visualstudio.com]<img src=https://code.visualstudio.com/assets/docs/languages/cpp/cpp-toc.png  style="zoom: 33%;" />
 
 ## [Remote Development](https://code.visualstudio.com/docs/languages/cpp#_remote-development)
 
