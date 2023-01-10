@@ -48,7 +48,7 @@ disqus:  # if you wanna comment feature, go to https://disqus.com/ to get your c
 
 ## donation
 donation: off  # type 'on'/'off' to choice display donation button at post page or not
-threejs: on
+
 
 ## carousels
 index_carousel: on  # index page carousel switch
