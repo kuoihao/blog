@@ -23,5 +23,5 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
- font:
+  font:
     text: Roboto
