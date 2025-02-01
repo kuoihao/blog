@@ -3,7 +3,6 @@ site_url: https://kuoihao.github.io/blog/
 theme:
   name: material
   palette:
-
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
       toggle:
@@ -23,5 +22,41 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
-  font:
-    text: Roboto
+
+  features:
+    - content.code.select
+    - content.code.copy
+    - content.code.annotate 
+    - navigation.indexes
+    # - navigation.tabs
+
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+
+
+plugins:
+  - search
+  - blog
+  - tags
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js
+
+nav:
+  - Home: index.md
+  - Blog:
+     - blog/index.md
+  - llama:
+    - llama/llama.cpp学习.md
