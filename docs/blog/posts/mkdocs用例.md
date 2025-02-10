@@ -9,7 +9,8 @@ date:
 
 
 代码指定行高亮：
-```cpp hl_lines="1 2"
+
+```cpp linenums="1" hl_lines="1 2" 
 #include <iostream>
 using namespace std;
 

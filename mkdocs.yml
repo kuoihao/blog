@@ -58,5 +58,10 @@ nav:
   - Home: index.md
   - Blog:
      - blog/index.md
-  - llama:
-    - llama/llama.cpp学习.md
+  - Llama:
+    - Llama/index.md
+    - Llama/llama.cpp.md
+    - Llama/2410.03613.md
+    - Llama/代码操作手册.md
+    - Llama/问题问答.md
+    - Llama/llama.cpp源码解读.md
