@@ -3,7 +3,7 @@ date:
     created: 2025-02-21
 
 ---
-
+<!-- more -->
 
 1. dnschecker.org查询路由器ip地址
 2. ssh root@[ipv6地址] 密码 lierwang
