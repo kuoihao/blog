@@ -65,3 +65,5 @@ nav:
     - Llama/代码操作手册.md
     - Llama/问题问答.md
     - Llama/llama.cpp源码解读.md
+    - Llama/配置一个干净的安卓开发环境.md
+    - Llama/如何检测设备是否支持sve特性.md
