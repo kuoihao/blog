@@ -61,7 +61,6 @@ cmake \
 adb push ./out/build/ndk /data/local/tmp/
 ```
 将编译后的文件传输到/data/local/tmp/ndk文件夹下
-
 ### 评估性能：
 编写监控脚本monitor.sh
 ```bash
@@ -129,10 +128,7 @@ report.html示意：
 
 火焰图：
 ![](README_IMG/out.svg)
-
-
 ### 使用lldb.server进行debug
-
 #### 设置登陆调试脚本(.vscode/launch.json)
 ```json
 {
@@ -162,7 +158,6 @@ report.html示意：
     ]
 }
 ```
-
 #### 设置前置任务（tasks.json）
 ```json
 {
@@ -188,3 +183,44 @@ gnome-terminal -- bash -c "adb shell 'cd /data/local/tmp && ./lldb-server platfo
 
 之后可以在run and debug界面选择设置的登陆调试进行图形化调试
 ![alt text](README_IMG/图形化调试.png)
+
+
+
+### 使用qemu在本地模拟运行
+
+首先安装qemu,官方有一个[教程](https://learn.arm.com/learning-paths/servers-and-cloud-computing/sve/sve_armie/)
+
+```bash
+sudo apt install qemu-user -y
+//这里缺什么库就安装一下，参考qemu的安装文档
+```
+
+修改cmakepresets.json如下
+```json
+{
+    "name": "ndk",
+    "displayName": "NDK",
+    "description": "使用NDK工具链交叉编译",
+    "binaryDir": "${sourceDir}/out/build/${presetName}",
+    "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_TOOLCHAIN_FILE": "~/Android/Sdk/ndk/29.0.13113456/build/cmake/android.toolchain.cmake",
+        "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/install/${presetName}",
+        "CMAKE_C_FLAGS": "-march=armv8.7a+sve+sve2 -g -static",
+        "CMAKE_CXX_FLAGS": "-march=armv8.7a+sve+sve2 -g -static",
+        "GGML_OPENMP":"OFF",
+        "GGML_LLAMAFILE":"OFF",
+        "BUILD_SHARED_LIBS":"OFF",
+        "ANDROID_ABI": "arm64-v8a",
+        "ANDROID_PLATFORM": "android-35"
+    }
+}
+```
+重点是关闭共享库的构建，以便于构建静态二进制文件
+
+用户模式运行llama-cli的命令
+```bash
+qemu-aarch64 -cpu max ./out/build/ndk/bin/llama-cli -m ~/workspace/chat-llama2-1b-1.0.Q4_0.gguf
+```
+可以使用相同的格式运行其他二进制文件。
+

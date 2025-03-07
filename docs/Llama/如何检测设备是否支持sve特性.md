@@ -7,8 +7,8 @@ date:
 
 <!-- more-->
 
-# 官方的一个验证代码
-1. 通过读取sve向量长度来判断是否支持sve
+### 官方的一个验证代码
+#### 1. 通过读取sve向量长度来判断是否支持sve
 
 [网址](https://learn.arm.com/learning-paths/servers-and-cloud-computing/sve/sve_basics/)
 
@@ -25,9 +25,10 @@ int main()
     printf("SVE vector length is: %ld bytes\n", svcntb());
 }
 ```
-2. 通过hwcaps向内核空间的传递参数
 
 
+#### 2. 通过hwcaps向内核空间的传递参数
+   
 ```cpp
 #include <stdio.h>
 #include <stdint.h>
@@ -59,6 +60,7 @@ int main() {
     return 0;
 }
 ```
+
 参考[cpufeature hwcaps](https://github.com/torvalds/linux/blob/master/arch/arm64/include/uapi/asm/hwcap.h)
 ```cpp
 
@@ -245,14 +247,15 @@ int main() {
 
 
 
-3. arm sve2教程
+#### 3. arm sve2教程
 [教程地址](https://learn.arm.com/learning-paths/mobile-graphics-and-gaming/android_sve2/part1/) 
 [源码](https://github.com/dawidborycki/Arm.SVE2)
 
 
-4. 工具地址
+#### 4. 工具地址
 
 https://gitee.com/kuoihao/testcode/repository/archive/master.zip
 
-
+```bash
 git clone https://gitee.com/kuoihao/testcode.git
+```

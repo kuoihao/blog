@@ -60,12 +60,9 @@ nav:
      - blog/index.md
   - Llama:
     - Llama/index.md
-    - Llama/llama.cpp.md
+    - Llama/llama.cpp配置环境.md
     - Llama/2410.03613.md
-    - Llama/代码操作手册.md
-    - Llama/问题问答.md
     - Llama/llama.cpp源码解读.md
-    - Llama/配置一个干净的安卓开发环境.md
     - Llama/如何检测设备是否支持sve特性.md
     - Llama/观察可能的研究方向.md
     - Llama/学习neon指令加速.md
