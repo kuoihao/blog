@@ -25,7 +25,7 @@ cmake \
   -DGGML_LLAMAFILE=OFF \
   -B build-android
 ```
--DCMAKE_TOOLCHAIN_FILE=${系统的ndk编译工具链地址}
+-DCMAKE_TOOLCHAIN_FILE=`${系统的ndk编译工具链地址}`
 #### 2.使用vscode搭配CMakePreset.json
 这里是CMakePresets.json的一个示例，编译后的文件在`"binaryDir": "${sourceDir}/out/build/${presetName}"`
 ```json
@@ -54,6 +54,13 @@ cmake \
 ```
 之后可以使用图形化界面直接build
 ### 运行交互：
+![alt text](README_IMG/vscode调试控制图.png)
+
+使用
+```bash
+adb push ./out/build/ndk /data/local/tmp/
+```
+将编译后的文件传输到/data/local/tmp/ndk文件夹下
 
 ### 评估性能：
 编写监控脚本monitor.sh
@@ -121,6 +128,63 @@ report.html示意：
 ![](README_IMG/20250106224902.png)
 
 火焰图：
-![](./README_IMG/out.svg)
+![](README_IMG/out.svg)
 
-调用
+
+### 使用lldb.server进行debug
+
+#### 设置登陆调试脚本(.vscode/launch.json)
+```json
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "lldb launch",
+            "program": "/data/local/tmp/workspace/ndk/bin/llama-cli",
+            "args": [
+                "-m",
+                "/data/local/tmp/ggml-model-q4_0.gguf"
+            ],
+            "preLaunchTask": "build task",
+            "initCommands": [
+                "platform select remote-android",
+                "platform connect connect://localhost:9090",
+                "settings set target.inherit-env false",
+                "platform settings -w /data/local/tmp/",
+                "platform status"
+            ],
+            "env": {
+                "LD_LIBRARY_PATH": "/data/local/tmp/workspace/ndk/bin"
+            }
+        }
+    ]
+}
+```
+
+#### 设置前置任务（tasks.json）
+```json
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build task",
+            "type": "shell",
+            "command": "bash debug.sh"
+        }
+    ]
+}
+```
+
+具体的任务可以在debug.sh中调整
+```bash
+#!/bin/bash
+# adb push /home/gyh/llama-test/llama.cpp-b3173/out/build/* /data/local/tmp/workspace/
+adb forward tcp:9090 tcp:9090
+# adb shell "cd /data/local/tmp && ./data/local/tmp/lldb-server platform --server --listen '*:9090'"
+gnome-terminal -- bash -c "adb shell 'cd /data/local/tmp && ./lldb-server platform --listen *:9090 --server'"
+```
+
+之后可以在run and debug界面选择设置的登陆调试进行图形化调试
+![alt text](README_IMG/图形化调试.png)
