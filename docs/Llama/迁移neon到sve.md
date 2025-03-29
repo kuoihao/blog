@@ -125,7 +125,7 @@ void matrix_multiply_4x4_neon(const float32_t *A, const float32_t *B, float32_t 
 这个 4x4 内核可以用于更通用的内核。
 本例中使用的 Neon 内嵌函数有
 
-![neon内建函数](image.png)
+![neon内建函数](./README_IMG/neon内建函数.png)
 
 使用sve内建函数重写neon内建函数，以下：
 ```cpp
@@ -191,7 +191,7 @@ void matrix_multiply_nx4_sve(const float32_t *A, const float32_t *B, float32_t *
 }
 ```
 
-![sve内建函数](image-1.png)
+![sve内建函数](./README_IMG/sve内建函数.png)
 
 
 重要的一点不同就是可以忽略矩阵的一个维度，因为sve中具有变长向量特性。或者您可以显式地传递n维向量的长度，并使用预测寄存器来保证不会超过它

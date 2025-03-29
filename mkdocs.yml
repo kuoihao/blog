@@ -66,4 +66,6 @@ nav:
     - Llama/如何检测设备是否支持sve特性.md
     - Llama/观察可能的研究方向.md
     - Llama/学习neon指令加速.md
-    - Llama/llama.cpp配置文档
+    - Llama/llama.cpp配置文档.md
+    - Llama/收集到的资料.md
+    - Llama/sve算子解释.md
