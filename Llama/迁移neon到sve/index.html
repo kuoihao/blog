@@ -1,0 +1,1199 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://kuoihao.github.io/blog/Llama/%E8%BF%81%E7%A7%BBneon%E5%88%B0sve/">
+      
+      
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.9">
+    
+    
+      
+        <title>迁移neon到sve - 技术备忘录</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.4af4bdda.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="技术备忘录" class="md-header__button md-logo" aria-label="技术备忘录" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            技术备忘录
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              迁移neon到sve
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14.3 16-.7-2h-3.2l-.7 2H7.8L11 7h2l3.2 9zM20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12zm-9.15 3.96h2.3L12 9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="技术备忘录" class="md-nav__button md-logo" aria-label="技术备忘录" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    技术备忘录
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../blog/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Blog
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/archive/2025/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2025
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../blog/category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    Llama
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Llama
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../llama.cpp%E9%85%8D%E7%BD%AE%E7%8E%AF%E5%A2%83/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    llama.cpp学习
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../2410.03613/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Large_Language_Model_Performance_Benchmarching_on_Mobile_Platforms
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../llama.cpp%E6%BA%90%E7%A0%81%E8%A7%A3%E8%AF%BB/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Llama.cpp源码解读
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E5%A6%82%E4%BD%95%E6%A3%80%E6%B5%8B%E8%AE%BE%E5%A4%87%E6%98%AF%E5%90%A6%E6%94%AF%E6%8C%81sve%E7%89%B9%E6%80%A7/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    如何检测设备是否支持sve特性
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E8%A7%82%E5%AF%9F%E5%8F%AF%E8%83%BD%E7%9A%84%E7%A0%94%E7%A9%B6%E6%96%B9%E5%90%91/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    观察可能的研究方向
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E5%AD%A6%E4%B9%A0neon%E6%8C%87%E4%BB%A4%E5%8A%A0%E9%80%9F/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    学习neon指令加速
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../llama.cpp%E9%85%8D%E7%BD%AE%E6%96%87%E6%A1%A3/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Llama.cpp配置文档
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../%E6%94%B6%E9%9B%86%E5%88%B0%E7%9A%84%E8%B5%84%E6%96%99/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    收集到的资料
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../sve%E7%AE%97%E5%AD%90%E8%A7%A3%E9%87%8A/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Sve算子解释
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+  <h1>迁移neon到sve</h1>
+
+<p><a href="https://developer.arm.com/documentation/102131/0100/Part-Four---Migrate-your-Neon-code-to-SVE">翻译原文</a>
+迁移你的neon代码到sve</p>
+<p>迁移代码的过程略有不同，这个取决于代码是否使用高级语言，例如c/c++或者Fortran，亦或者你的代码使用汇编
+为了将c/c++，Fortran这样的高级语言迁移到SVE VLA模式(Vector Length Agnostic矢量长度不可知)，你需要：
+更新你的编译选项(包括自动向量化选项)
+尽可能参考sve规范，使用sve内建函数代替neon内建函数
+将代码和数学库的sve变体连接</p>
+<p>如果你正在写vla汇编，你应该
+更新你的编译选项(包括自动向量化选项)
+尽可能参考手册使用sve重写你的代码并将您的代码和数学库的sve变体链接</p>
+<p>以下示例如何将优化好的neon代码（c语言编写）使用acle sve重写为优化的sve代码</p>
+<p>示例不包含重写neon优化的汇编</p>
+<p>示例一，使用内建函数重写简单矩阵乘法
+这个示例使用了neon内建函数实现了一些c函数。所选示例没有展示应用的全部复杂性，但说明了内建函数的使用方法，并且是更复杂代码的起点，在这个示例中，我们使用sve内建函数重写代码</p>
+<p>矩阵乘法是一种在数据密集型应用中的操作并且由一组简单重复的数学操作组成</p>
+<p>矩阵乘法图
+<a href="https://documentation-service.arm.com/static/667c2d79e03ddf7643cba7ce?token=">Figure 1. Matrix multiplication diagram</a>
+矩阵乘法过程如下：</p>
+<ol>
+<li>取得A矩阵中的一行</li>
+<li>对这行和矩阵B的一列进行点乘操作</li>
+<li>将结果储存到C矩阵对应的行和列中
+对于32位浮点矩阵，乘法可以表示为
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">matrix_multiply_c</span><span class="p">(</span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i_idx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i_idx</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j_idx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">m</span><span class="p">;</span><span class="w"> </span><span class="n">j_idx</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">            </span><span class="n">C</span><span class="p">[</span><span class="n">n</span><span class="o">*</span><span class="n">j_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i_idx</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k_idx</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">k</span><span class="p">;</span><span class="w"> </span><span class="n">k_idx</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">                </span><span class="n">C</span><span class="p">[</span><span class="n">n</span><span class="o">*</span><span class="n">j_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i_idx</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">A</span><span class="p">[</span><span class="n">n</span><span class="o">*</span><span class="n">k_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i_idx</span><span class="p">]</span><span class="o">*</span><span class="n">B</span><span class="p">[</span><span class="n">k</span><span class="o">*</span><span class="n">j_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">k_idx</span><span class="p">];</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">            </span><span class="p">}</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">}</span>
+</span></code></pre></div>
+That is, an n x m matrix M, is represented as an array M_array, where Mij = M_array[n<em>j + i].
+假设矩阵使用列主序存储，意味着nXm的矩阵M,被表示为数组M（M_array），Mij被映射到M_array[n</em>j+i]。
+!!!理解：列主序，在M_array中存储的是矩阵的一列一列，（1,2）（实际上是第2行第3列呢）被映射到（2个列即n*j加上1个元素i的位置上）</li>
+</ol>
+<p>This code is suboptimal, because it does not make full use of Neon. Intrinsics can be used to improve it.
+这段代买优化效率不高，yin wei，因为他没有充分利用neon,可以使用内联函数改进它</p>
+<p>以下代码使用neon内建函数计算两个4X4矩阵相乘，因为数据量比较小且固定，所有这些值可以同时放入寄存器。这个循环可以完全展开
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">matrix_multiply_4x4_neon</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">C</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="c1">// these are the columns A</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">A0</span><span class="p">;</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">A1</span><span class="p">;</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">A2</span><span class="p">;</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">A3</span><span class="p">;</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="c1">// these are the columns B</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">B0</span><span class="p">;</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">B1</span><span class="p">;</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">B2</span><span class="p">;</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">B3</span><span class="p">;</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="c1">// these are the columns C</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">C0</span><span class="p">;</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">C1</span><span class="p">;</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">C2</span><span class="p">;</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">C3</span><span class="p">;</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">    </span><span class="n">A0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">A</span><span class="p">);</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">    </span><span class="n">A1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="mi">4</span><span class="p">);</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="n">A2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="mi">8</span><span class="p">);</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">    </span><span class="n">A3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="mi">12</span><span class="p">);</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">    </span><span class="c1">// Zero accumulators for C values</span>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">    </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vmovq_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">    </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vmovq_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">    </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vmovq_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">    </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vmovq_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">    </span><span class="c1">// Multiply accumulate in 4x1 blocks, that is each column in C</span>
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="w">    </span><span class="n">B0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">B</span><span class="p">);</span>
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">    </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="w"> </span><span class="n">A0</span><span class="p">,</span><span class="w"> </span><span class="n">B0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">    </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="w"> </span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">B0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a><span class="w">    </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">,</span><span class="w"> </span><span class="n">B0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="w">    </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="w"> </span><span class="n">A3</span><span class="p">,</span><span class="w"> </span><span class="n">B0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="w">    </span><span class="n">vst1q_f32</span><span class="p">(</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">C0</span><span class="p">);</span>
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>
+</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a><span class="w">    </span><span class="n">B1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">B</span><span class="o">+</span><span class="mi">4</span><span class="p">);</span>
+</span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a><span class="w">    </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="w"> </span><span class="n">A0</span><span class="p">,</span><span class="w"> </span><span class="n">B1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a><span class="w">    </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="w"> </span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">B1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-1-42"><a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a><span class="w">    </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">,</span><span class="w"> </span><span class="n">B1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-1-43"><a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a><span class="w">    </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="w"> </span><span class="n">A3</span><span class="p">,</span><span class="w"> </span><span class="n">B1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-1-44"><a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a><span class="w">    </span><span class="n">vst1q_f32</span><span class="p">(</span><span class="n">C</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">C1</span><span class="p">);</span>
+</span><span id="__span-1-45"><a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a>
+</span><span id="__span-1-46"><a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a><span class="w">    </span><span class="n">B2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">B</span><span class="o">+</span><span class="mi">8</span><span class="p">);</span>
+</span><span id="__span-1-47"><a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a><span class="w">    </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="w"> </span><span class="n">A0</span><span class="p">,</span><span class="w"> </span><span class="n">B2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-1-48"><a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a><span class="w">    </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="w"> </span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">B2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-1-49"><a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a><span class="w">    </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">,</span><span class="w"> </span><span class="n">B2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-1-50"><a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a><span class="w">    </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="w"> </span><span class="n">A3</span><span class="p">,</span><span class="w"> </span><span class="n">B2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-1-51"><a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a><span class="w">    </span><span class="n">vst1q_f32</span><span class="p">(</span><span class="n">C</span><span class="o">+</span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">C2</span><span class="p">);</span>
+</span><span id="__span-1-52"><a id="__codelineno-1-52" name="__codelineno-1-52" href="#__codelineno-1-52"></a>
+</span><span id="__span-1-53"><a id="__codelineno-1-53" name="__codelineno-1-53" href="#__codelineno-1-53"></a><span class="w">    </span><span class="n">B3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">B</span><span class="o">+</span><span class="mi">12</span><span class="p">);</span>
+</span><span id="__span-1-54"><a id="__codelineno-1-54" name="__codelineno-1-54" href="#__codelineno-1-54"></a><span class="w">    </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="w"> </span><span class="n">A0</span><span class="p">,</span><span class="w"> </span><span class="n">B3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-1-55"><a id="__codelineno-1-55" name="__codelineno-1-55" href="#__codelineno-1-55"></a><span class="w">    </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="w"> </span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">B3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-1-56"><a id="__codelineno-1-56" name="__codelineno-1-56" href="#__codelineno-1-56"></a><span class="w">    </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">,</span><span class="w"> </span><span class="n">B3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-1-57"><a id="__codelineno-1-57" name="__codelineno-1-57" href="#__codelineno-1-57"></a><span class="w">    </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="w"> </span><span class="n">A3</span><span class="p">,</span><span class="w"> </span><span class="n">B3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-1-58"><a id="__codelineno-1-58" name="__codelineno-1-58" href="#__codelineno-1-58"></a><span class="w">    </span><span class="n">vst1q_f32</span><span class="p">(</span><span class="n">C</span><span class="o">+</span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="n">C3</span><span class="p">);</span>
+</span><span id="__span-1-59"><a id="__codelineno-1-59" name="__codelineno-1-59" href="#__codelineno-1-59"></a><span class="p">}</span>
+</span></code></pre></div>
+选择固定大小的4X4矩阵，因为：</p>
+<p>某些应用程序需要特定的 4x4 矩阵，例如：图形或相对论物理学。
+霓虹矢量寄存器包含四个 32 位值。将应用程序与架构相匹配可以使其优化更容易。
+这个 4x4 内核可以用于更通用的内核。
+本例中使用的 Neon 内嵌函数有</p>
+<p><img alt="neon内建函数" src="../README_IMG/neon%E5%86%85%E5%BB%BA%E5%87%BD%E6%95%B0.png" /></p>
+<p>使用sve内建函数重写neon内建函数，以下：
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">matrix_multiply_nx4_sve</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">n</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="c1">// these are the columns A</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">A0</span><span class="p">;</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">A1</span><span class="p">;</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">A2</span><span class="p">;</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">A3</span><span class="p">;</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="c1">// these are the columns B</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">B0</span><span class="p">;</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">B1</span><span class="p">;</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">B2</span><span class="p">;</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">B3</span><span class="p">;</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">    </span><span class="c1">// these are the columns C</span>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">C0</span><span class="p">;</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">C1</span><span class="p">;</span>
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">C2</span><span class="p">;</span>
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">C3</span><span class="p">;</span>
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">    </span><span class="n">svbool_t</span><span class="w"> </span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svwhilelt_b32_u32</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">    </span><span class="n">A0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="p">);</span>
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">    </span><span class="n">A1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="o">+</span><span class="n">n</span><span class="p">);</span>
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">    </span><span class="n">A2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">);</span>
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">    </span><span class="n">A3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="p">);</span>
+</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a>
+</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">    </span><span class="c1">// Zero accumulators for C values</span>
+</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">    </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svdup_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">    </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svdup_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="w">    </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svdup_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="w">    </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svdup_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a>
+</span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="w">    </span><span class="c1">// Multiply accumulate in 4x1 blocks, that is each column in C</span>
+</span><span id="__span-2-33"><a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">    </span><span class="n">B0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1rq_f32</span><span class="p">(</span><span class="n">svptrue_b32</span><span class="p">(),</span><span class="w"> </span><span class="n">B</span><span class="p">);</span>
+</span><span id="__span-2-34"><a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">    </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="w"> </span><span class="n">A0</span><span class="p">,</span><span class="w"> </span><span class="n">B0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-2-35"><a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">    </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="w"> </span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">B0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-2-36"><a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="w">    </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">,</span><span class="w"> </span><span class="n">B0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-2-37"><a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="w">    </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="w"> </span><span class="n">A3</span><span class="p">,</span><span class="w"> </span><span class="n">B0</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-2-38"><a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="w">    </span><span class="n">svst1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="n">C0</span><span class="p">);</span>
+</span><span id="__span-2-39"><a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a>
+</span><span id="__span-2-40"><a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="w">    </span><span class="n">B1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1rq_f32</span><span class="p">(</span><span class="n">svptrue_b32</span><span class="p">(),</span><span class="w"> </span><span class="n">B</span><span class="o">+</span><span class="mi">4</span><span class="p">);</span>
+</span><span id="__span-2-41"><a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a><span class="w">    </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="w"> </span><span class="n">A0</span><span class="p">,</span><span class="w"> </span><span class="n">B1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-2-42"><a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a><span class="w">    </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="w"> </span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">B1</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-2-43"><a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a><span class="w">    </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">,</span><span class="w"> </span><span class="n">B1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-2-44"><a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a><span class="w">    </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="w"> </span><span class="n">A3</span><span class="p">,</span><span class="w"> </span><span class="n">B1</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-2-45"><a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a><span class="w">    </span><span class="n">svst1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">C1</span><span class="p">);</span>
+</span><span id="__span-2-46"><a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a>
+</span><span id="__span-2-47"><a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a><span class="w">    </span><span class="n">B2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1rq_f32</span><span class="p">(</span><span class="n">svptrue_b32</span><span class="p">(),</span><span class="w"> </span><span class="n">B</span><span class="o">+</span><span class="mi">8</span><span class="p">);</span>
+</span><span id="__span-2-48"><a id="__codelineno-2-48" name="__codelineno-2-48" href="#__codelineno-2-48"></a><span class="w">    </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="w"> </span><span class="n">A0</span><span class="p">,</span><span class="w"> </span><span class="n">B2</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-2-49"><a id="__codelineno-2-49" name="__codelineno-2-49" href="#__codelineno-2-49"></a><span class="w">    </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="w"> </span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">B2</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-2-50"><a id="__codelineno-2-50" name="__codelineno-2-50" href="#__codelineno-2-50"></a><span class="w">    </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">,</span><span class="w"> </span><span class="n">B2</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-2-51"><a id="__codelineno-2-51" name="__codelineno-2-51" href="#__codelineno-2-51"></a><span class="w">    </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="w"> </span><span class="n">A3</span><span class="p">,</span><span class="w"> </span><span class="n">B2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-2-52"><a id="__codelineno-2-52" name="__codelineno-2-52" href="#__codelineno-2-52"></a><span class="w">    </span><span class="n">svst1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="o">+</span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="n">C2</span><span class="p">);</span>
+</span><span id="__span-2-53"><a id="__codelineno-2-53" name="__codelineno-2-53" href="#__codelineno-2-53"></a>
+</span><span id="__span-2-54"><a id="__codelineno-2-54" name="__codelineno-2-54" href="#__codelineno-2-54"></a><span class="w">    </span><span class="n">B3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1rq_f32</span><span class="p">(</span><span class="n">svptrue_b32</span><span class="p">(),</span><span class="w"> </span><span class="n">B</span><span class="o">+</span><span class="mi">12</span><span class="p">);</span>
+</span><span id="__span-2-55"><a id="__codelineno-2-55" name="__codelineno-2-55" href="#__codelineno-2-55"></a><span class="w">    </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="w"> </span><span class="n">A0</span><span class="p">,</span><span class="w"> </span><span class="n">B3</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-2-56"><a id="__codelineno-2-56" name="__codelineno-2-56" href="#__codelineno-2-56"></a><span class="w">    </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="w"> </span><span class="n">A1</span><span class="p">,</span><span class="w"> </span><span class="n">B3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-2-57"><a id="__codelineno-2-57" name="__codelineno-2-57" href="#__codelineno-2-57"></a><span class="w">    </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="w"> </span><span class="n">A2</span><span class="p">,</span><span class="w"> </span><span class="n">B3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-2-58"><a id="__codelineno-2-58" name="__codelineno-2-58" href="#__codelineno-2-58"></a><span class="w">    </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="w"> </span><span class="n">A3</span><span class="p">,</span><span class="w"> </span><span class="n">B3</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-2-59"><a id="__codelineno-2-59" name="__codelineno-2-59" href="#__codelineno-2-59"></a><span class="w">    </span><span class="n">svst1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="o">+</span><span class="mi">12</span><span class="p">,</span><span class="w"> </span><span class="n">C3</span><span class="p">);</span>
+</span><span id="__span-2-60"><a id="__codelineno-2-60" name="__codelineno-2-60" href="#__codelineno-2-60"></a><span class="p">}</span>
+</span></code></pre></div></p>
+<p><img alt="sve内建函数" src="../README_IMG/sve%E5%86%85%E5%BB%BA%E5%87%BD%E6%95%B0.png" /></p>
+<p>重要的一点不同就是可以忽略矩阵的一个维度，因为sve中具有变长向量特性。或者您可以显式地传递n维向量的长度，并使用预测寄存器来保证不会超过它</p>
+<p>Example Two - Rewriting a larger matrix multiplication code with intrinsics
+示例二，使用内联函数重写较大的矩阵乘法</p>
+<p>To multiply larger matrices, treat them as blocks of 4x4 matrices. However, this approach only works with matrix sizes which are a multiple of four in both dimensions. To use this method without changing it, pad the matrix with zeroes.</p>
+<p>The Neon code for a more general matrix multiplication is listed below. The structure of the kernel has changed with the addition of loops and address calculations being the major changes. Like in the 4x4 kernel, unique variable names are used for the B columns. The alternative would be to use one variable and re-load it. This acts as a hint to the compiler to assign different registers to these variables. Assigning different registers enables the processor to complete the arithmetic instructions for one column, while waiting on the loads for another.</p>
+<p><div class="language-cpp highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">matrix_multiply_neon</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="cm">/*</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="cm">     * Multiply matrices A and B, store the result in C.</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="cm">     * It is the users responsibility to make sure the matrices are compatible.</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="cm">     */</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">a_idx</span><span class="p">;</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">b_idx</span><span class="p">;</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">c_idx</span><span class="p">;</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="c1">// these are the columns of a 4x4 sub matrix of A</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">A0</span><span class="p">;</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">A1</span><span class="p">;</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">A2</span><span class="p">;</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">A3</span><span class="p">;</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">    </span><span class="c1">// these are the columns of a 4x4 sub matrix of B</span>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">B0</span><span class="p">;</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">B1</span><span class="p">;</span>
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">B2</span><span class="p">;</span>
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">B3</span><span class="p">;</span>
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="w">    </span><span class="c1">// these are the columns of a 4x4 sub matrix of C</span>
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">C0</span><span class="p">;</span>
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">C1</span><span class="p">;</span>
+</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">C2</span><span class="p">;</span>
+</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="w">    </span><span class="n">float32x4_t</span><span class="w"> </span><span class="n">C3</span><span class="p">;</span>
+</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>
+</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i_idx</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i_idx</span><span class="o">+=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-30"><a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j_idx</span><span class="o">&lt;</span><span class="n">m</span><span class="p">;</span><span class="w"> </span><span class="n">j_idx</span><span class="o">+=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-31"><a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="w">            </span><span class="c1">// zero accumulators before matrix op</span>
+</span><span id="__span-3-32"><a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="w">            </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vmovq_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-3-33"><a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="w">            </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vmovq_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-3-34"><a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="w">            </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vmovq_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-3-35"><a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a><span class="w">            </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vmovq_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-3-36"><a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k_idx</span><span class="o">&lt;</span><span class="n">k</span><span class="p">;</span><span class="w"> </span><span class="n">k_idx</span><span class="o">+=</span><span class="mi">4</span><span class="p">){</span>
+</span><span id="__span-3-37"><a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a><span class="w">                </span><span class="c1">// compute base index to 4x4 block</span>
+</span><span id="__span-3-38"><a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a><span class="w">                </span><span class="n">a_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="o">*</span><span class="n">k_idx</span><span class="p">;</span>
+</span><span id="__span-3-39"><a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a><span class="w">                </span><span class="n">b_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">k</span><span class="o">*</span><span class="n">j_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">k_idx</span><span class="p">;</span>
+</span><span id="__span-3-40"><a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a>
+</span><span id="__span-3-41"><a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a><span class="w">                </span><span class="c1">// load most current a values in row</span>
+</span><span id="__span-3-42"><a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a><span class="w">                </span><span class="n">A0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="n">a_idx</span><span class="p">);</span>
+</span><span id="__span-3-43"><a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a><span class="w">                </span><span class="n">A1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="n">a_idx</span><span class="o">+</span><span class="n">n</span><span class="p">);</span>
+</span><span id="__span-3-44"><a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a><span class="w">                </span><span class="n">A2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="n">a_idx</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">);</span>
+</span><span id="__span-3-45"><a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a><span class="w">                </span><span class="n">A3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="n">a_idx</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="p">);</span>
+</span><span id="__span-3-46"><a id="__codelineno-3-46" name="__codelineno-3-46" href="#__codelineno-3-46"></a>
+</span><span id="__span-3-47"><a id="__codelineno-3-47" name="__codelineno-3-47" href="#__codelineno-3-47"></a><span class="w">                </span><span class="c1">// multiply accumulate 4x1 blocks, that is each column C</span>
+</span><span id="__span-3-48"><a id="__codelineno-3-48" name="__codelineno-3-48" href="#__codelineno-3-48"></a><span class="w">                </span><span class="n">B0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">B</span><span class="o">+</span><span class="n">b_idx</span><span class="p">);</span>
+</span><span id="__span-3-49"><a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a><span class="w">                </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="n">A0</span><span class="p">,</span><span class="n">B0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-3-50"><a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a><span class="w">                </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="n">A1</span><span class="p">,</span><span class="n">B0</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-3-51"><a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a><span class="w">                </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="n">A2</span><span class="p">,</span><span class="n">B0</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-3-52"><a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a><span class="w">                </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="n">A3</span><span class="p">,</span><span class="n">B0</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-3-53"><a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a>
+</span><span id="__span-3-54"><a id="__codelineno-3-54" name="__codelineno-3-54" href="#__codelineno-3-54"></a><span class="w">                </span><span class="n">B1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">B</span><span class="o">+</span><span class="n">b_idx</span><span class="o">+</span><span class="n">k</span><span class="p">);</span>
+</span><span id="__span-3-55"><a id="__codelineno-3-55" name="__codelineno-3-55" href="#__codelineno-3-55"></a><span class="w">                </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="n">A0</span><span class="p">,</span><span class="n">B1</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-3-56"><a id="__codelineno-3-56" name="__codelineno-3-56" href="#__codelineno-3-56"></a><span class="w">                </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="n">A1</span><span class="p">,</span><span class="n">B1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-3-57"><a id="__codelineno-3-57" name="__codelineno-3-57" href="#__codelineno-3-57"></a><span class="w">                </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="n">A2</span><span class="p">,</span><span class="n">B1</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-3-58"><a id="__codelineno-3-58" name="__codelineno-3-58" href="#__codelineno-3-58"></a><span class="w">                </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="n">A3</span><span class="p">,</span><span class="n">B1</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-3-59"><a id="__codelineno-3-59" name="__codelineno-3-59" href="#__codelineno-3-59"></a>
+</span><span id="__span-3-60"><a id="__codelineno-3-60" name="__codelineno-3-60" href="#__codelineno-3-60"></a><span class="w">                </span><span class="n">B2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">B</span><span class="o">+</span><span class="n">b_idx</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">k</span><span class="p">);</span>
+</span><span id="__span-3-61"><a id="__codelineno-3-61" name="__codelineno-3-61" href="#__codelineno-3-61"></a><span class="w">                </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="n">A0</span><span class="p">,</span><span class="n">B2</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-3-62"><a id="__codelineno-3-62" name="__codelineno-3-62" href="#__codelineno-3-62"></a><span class="w">                </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="n">A1</span><span class="p">,</span><span class="n">B2</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-3-63"><a id="__codelineno-3-63" name="__codelineno-3-63" href="#__codelineno-3-63"></a><span class="w">                </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="n">A2</span><span class="p">,</span><span class="n">B2</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-3-64"><a id="__codelineno-3-64" name="__codelineno-3-64" href="#__codelineno-3-64"></a><span class="w">                </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="n">A3</span><span class="p">,</span><span class="n">B2</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-3-65"><a id="__codelineno-3-65" name="__codelineno-3-65" href="#__codelineno-3-65"></a>
+</span><span id="__span-3-66"><a id="__codelineno-3-66" name="__codelineno-3-66" href="#__codelineno-3-66"></a><span class="w">                </span><span class="n">B3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vld1q_f32</span><span class="p">(</span><span class="n">B</span><span class="o">+</span><span class="n">b_idx</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">k</span><span class="p">);</span>
+</span><span id="__span-3-67"><a id="__codelineno-3-67" name="__codelineno-3-67" href="#__codelineno-3-67"></a><span class="w">                </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="n">A0</span><span class="p">,</span><span class="n">B3</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-3-68"><a id="__codelineno-3-68" name="__codelineno-3-68" href="#__codelineno-3-68"></a><span class="w">                </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="n">A1</span><span class="p">,</span><span class="n">B3</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-3-69"><a id="__codelineno-3-69" name="__codelineno-3-69" href="#__codelineno-3-69"></a><span class="w">                </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="n">A2</span><span class="p">,</span><span class="n">B3</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-3-70"><a id="__codelineno-3-70" name="__codelineno-3-70" href="#__codelineno-3-70"></a><span class="w">                </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">vfmaq_laneq_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="n">A3</span><span class="p">,</span><span class="n">B3</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-3-71"><a id="__codelineno-3-71" name="__codelineno-3-71" href="#__codelineno-3-71"></a><span class="w">            </span><span class="p">}</span>
+</span><span id="__span-3-72"><a id="__codelineno-3-72" name="__codelineno-3-72" href="#__codelineno-3-72"></a><span class="w">            </span><span class="c1">// compute base index for stores</span>
+</span><span id="__span-3-73"><a id="__codelineno-3-73" name="__codelineno-3-73" href="#__codelineno-3-73"></a><span class="w">            </span><span class="n">c_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="o">*</span><span class="n">j_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i_idx</span><span class="p">;</span>
+</span><span id="__span-3-74"><a id="__codelineno-3-74" name="__codelineno-3-74" href="#__codelineno-3-74"></a><span class="w">            </span><span class="n">vst1q_f32</span><span class="p">(</span><span class="n">C</span><span class="o">+</span><span class="n">c_idx</span><span class="p">,</span><span class="w"> </span><span class="n">C0</span><span class="p">);</span>
+</span><span id="__span-3-75"><a id="__codelineno-3-75" name="__codelineno-3-75" href="#__codelineno-3-75"></a><span class="w">            </span><span class="n">vst1q_f32</span><span class="p">(</span><span class="n">C</span><span class="o">+</span><span class="n">c_idx</span><span class="o">+</span><span class="n">n</span><span class="p">,</span><span class="n">C1</span><span class="p">);</span>
+</span><span id="__span-3-76"><a id="__codelineno-3-76" name="__codelineno-3-76" href="#__codelineno-3-76"></a><span class="w">            </span><span class="n">vst1q_f32</span><span class="p">(</span><span class="n">C</span><span class="o">+</span><span class="n">c_idx</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="n">C2</span><span class="p">);</span>
+</span><span id="__span-3-77"><a id="__codelineno-3-77" name="__codelineno-3-77" href="#__codelineno-3-77"></a><span class="w">            </span><span class="n">vst1q_f32</span><span class="p">(</span><span class="n">C</span><span class="o">+</span><span class="n">c_idx</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="n">C3</span><span class="p">);</span>
+</span><span id="__span-3-78"><a id="__codelineno-3-78" name="__codelineno-3-78" href="#__codelineno-3-78"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-3-79"><a id="__codelineno-3-79" name="__codelineno-3-79" href="#__codelineno-3-79"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-3-80"><a id="__codelineno-3-80" name="__codelineno-3-80" href="#__codelineno-3-80"></a><span class="p">}</span>
+</span></code></pre></div>
+Compiling and disassembling this function, and comparing it with the C function shows:</p>
+<p>Fewer arithmetic instructions for a given matrix multiplication, because it utilizes the Advanced SIMD technology with full register packing. Typical C code, generally, does not.
+FMLA instead of FMUL instructions. As specified by the intrinsics.
+Fewer loop iterations. When used properly intrinsics allow loops to be unrolled easily.
+However, there are unnecessary loads and stores because of memory allocation and initialization of data types (for example, float32x4_t) which are not used in the no-intrinsics C code.</p>
+<p>Re-writing the code to use SVE intrinsics instead of Neon intrinsics, could give you:</p>
+<p><div class="language-cpp highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">matrix_multiply_sve</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">A</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">B</span><span class="p">,</span><span class="w"> </span><span class="n">float32_t</span><span class="w"> </span><span class="o">*</span><span class="n">C</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">k</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="cm">/*</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="cm">     * Multiply matrices A and B, store the result in C.</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="cm">     * It is the users responsibility to make sure the matrices are compatible.</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="cm">     */</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">a_idx</span><span class="p">;</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">b_idx</span><span class="p">;</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">c_idx</span><span class="p">;</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="c1">// these are the columns of a nx4 sub matrix of A</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">A0</span><span class="p">;</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">A1</span><span class="p">;</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">A2</span><span class="p">;</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">A3</span><span class="p">;</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">    </span><span class="c1">// these are the columns of a 4x4 sub matrix of B</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">B0</span><span class="p">;</span>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">B1</span><span class="p">;</span>
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">B2</span><span class="p">;</span>
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">B3</span><span class="p">;</span>
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">    </span><span class="c1">// these are the columns of a nx4 sub matrix of C</span>
+</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">C0</span><span class="p">;</span>
+</span><span id="__span-4-25"><a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">C1</span><span class="p">;</span>
+</span><span id="__span-4-26"><a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">C2</span><span class="p">;</span>
+</span><span id="__span-4-27"><a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="w">    </span><span class="n">svfloat32_t</span><span class="w"> </span><span class="n">C3</span><span class="p">;</span>
+</span><span id="__span-4-28"><a id="__codelineno-4-28" name="__codelineno-4-28" href="#__codelineno-4-28"></a>
+</span><span id="__span-4-29"><a id="__codelineno-4-29" name="__codelineno-4-29" href="#__codelineno-4-29"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i_idx</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i_idx</span><span class="o">+=</span><span class="n">svcntw</span><span class="p">())</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-30"><a id="__codelineno-4-30" name="__codelineno-4-30" href="#__codelineno-4-30"></a><span class="w">        </span><span class="c1">// calculate predicate for this i_idx</span>
+</span><span id="__span-4-31"><a id="__codelineno-4-31" name="__codelineno-4-31" href="#__codelineno-4-31"></a><span class="w">        </span><span class="n">svbool_t</span><span class="w"> </span><span class="n">pred</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svwhilelt_b32_u32</span><span class="p">(</span><span class="n">i_idx</span><span class="p">,</span><span class="w"> </span><span class="n">n</span><span class="p">);</span>
+</span><span id="__span-4-32"><a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a>
+</span><span id="__span-4-33"><a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">j_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">j_idx</span><span class="o">&lt;</span><span class="n">m</span><span class="p">;</span><span class="w"> </span><span class="n">j_idx</span><span class="o">+=</span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-34"><a id="__codelineno-4-34" name="__codelineno-4-34" href="#__codelineno-4-34"></a><span class="w">            </span><span class="c1">// zero accumulators before matrix op</span>
+</span><span id="__span-4-35"><a id="__codelineno-4-35" name="__codelineno-4-35" href="#__codelineno-4-35"></a><span class="w">            </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svdup_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-4-36"><a id="__codelineno-4-36" name="__codelineno-4-36" href="#__codelineno-4-36"></a><span class="w">            </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svdup_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-4-37"><a id="__codelineno-4-37" name="__codelineno-4-37" href="#__codelineno-4-37"></a><span class="w">            </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svdup_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-4-38"><a id="__codelineno-4-38" name="__codelineno-4-38" href="#__codelineno-4-38"></a><span class="w">            </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svdup_n_f32</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-4-39"><a id="__codelineno-4-39" name="__codelineno-4-39" href="#__codelineno-4-39"></a><span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">k_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">k_idx</span><span class="o">&lt;</span><span class="n">k</span><span class="p">;</span><span class="w"> </span><span class="n">k_idx</span><span class="o">+=</span><span class="mi">4</span><span class="p">){</span>
+</span><span id="__span-4-40"><a id="__codelineno-4-40" name="__codelineno-4-40" href="#__codelineno-4-40"></a><span class="w">                </span><span class="c1">// compute base index to 4x4 block</span>
+</span><span id="__span-4-41"><a id="__codelineno-4-41" name="__codelineno-4-41" href="#__codelineno-4-41"></a><span class="w">                </span><span class="n">a_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">i_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">n</span><span class="o">*</span><span class="n">k_idx</span><span class="p">;</span>
+</span><span id="__span-4-42"><a id="__codelineno-4-42" name="__codelineno-4-42" href="#__codelineno-4-42"></a><span class="w">                </span><span class="n">b_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">k</span><span class="o">*</span><span class="n">j_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">k_idx</span><span class="p">;</span>
+</span><span id="__span-4-43"><a id="__codelineno-4-43" name="__codelineno-4-43" href="#__codelineno-4-43"></a>
+</span><span id="__span-4-44"><a id="__codelineno-4-44" name="__codelineno-4-44" href="#__codelineno-4-44"></a><span class="w">                </span><span class="c1">// load most current a values in row</span>
+</span><span id="__span-4-45"><a id="__codelineno-4-45" name="__codelineno-4-45" href="#__codelineno-4-45"></a><span class="w">                </span><span class="n">A0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="o">+</span><span class="n">a_idx</span><span class="p">);</span>
+</span><span id="__span-4-46"><a id="__codelineno-4-46" name="__codelineno-4-46" href="#__codelineno-4-46"></a><span class="w">                </span><span class="n">A1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="o">+</span><span class="n">a_idx</span><span class="o">+</span><span class="n">n</span><span class="p">);</span>
+</span><span id="__span-4-47"><a id="__codelineno-4-47" name="__codelineno-4-47" href="#__codelineno-4-47"></a><span class="w">                </span><span class="n">A2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="o">+</span><span class="n">a_idx</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">);</span>
+</span><span id="__span-4-48"><a id="__codelineno-4-48" name="__codelineno-4-48" href="#__codelineno-4-48"></a><span class="w">                </span><span class="n">A3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">A</span><span class="o">+</span><span class="n">a_idx</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="p">);</span>
+</span><span id="__span-4-49"><a id="__codelineno-4-49" name="__codelineno-4-49" href="#__codelineno-4-49"></a>
+</span><span id="__span-4-50"><a id="__codelineno-4-50" name="__codelineno-4-50" href="#__codelineno-4-50"></a><span class="w">                </span><span class="c1">// multiply accumulate 4x1 blocks, that is each column C</span>
+</span><span id="__span-4-51"><a id="__codelineno-4-51" name="__codelineno-4-51" href="#__codelineno-4-51"></a><span class="w">                </span><span class="n">B0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1rq_f32</span><span class="p">(</span><span class="n">svptrue_b32</span><span class="p">(),</span><span class="w"> </span><span class="n">B</span><span class="o">+</span><span class="n">b_idx</span><span class="p">);</span>
+</span><span id="__span-4-52"><a id="__codelineno-4-52" name="__codelineno-4-52" href="#__codelineno-4-52"></a><span class="w">                </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="n">A0</span><span class="p">,</span><span class="n">B0</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-4-53"><a id="__codelineno-4-53" name="__codelineno-4-53" href="#__codelineno-4-53"></a><span class="w">                </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="n">A1</span><span class="p">,</span><span class="n">B0</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-4-54"><a id="__codelineno-4-54" name="__codelineno-4-54" href="#__codelineno-4-54"></a><span class="w">                </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="n">A2</span><span class="p">,</span><span class="n">B0</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-4-55"><a id="__codelineno-4-55" name="__codelineno-4-55" href="#__codelineno-4-55"></a><span class="w">                </span><span class="n">C0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C0</span><span class="p">,</span><span class="n">A3</span><span class="p">,</span><span class="n">B0</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-4-56"><a id="__codelineno-4-56" name="__codelineno-4-56" href="#__codelineno-4-56"></a>
+</span><span id="__span-4-57"><a id="__codelineno-4-57" name="__codelineno-4-57" href="#__codelineno-4-57"></a><span class="w">                </span><span class="n">B1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1rq_f32</span><span class="p">(</span><span class="n">svptrue_b32</span><span class="p">(),</span><span class="w"> </span><span class="n">B</span><span class="o">+</span><span class="n">b_idx</span><span class="o">+</span><span class="n">k</span><span class="p">);</span>
+</span><span id="__span-4-58"><a id="__codelineno-4-58" name="__codelineno-4-58" href="#__codelineno-4-58"></a><span class="w">                </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="n">A0</span><span class="p">,</span><span class="n">B1</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-4-59"><a id="__codelineno-4-59" name="__codelineno-4-59" href="#__codelineno-4-59"></a><span class="w">                </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="n">A1</span><span class="p">,</span><span class="n">B1</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-4-60"><a id="__codelineno-4-60" name="__codelineno-4-60" href="#__codelineno-4-60"></a><span class="w">                </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="n">A2</span><span class="p">,</span><span class="n">B1</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-4-61"><a id="__codelineno-4-61" name="__codelineno-4-61" href="#__codelineno-4-61"></a><span class="w">                </span><span class="n">C1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C1</span><span class="p">,</span><span class="n">A3</span><span class="p">,</span><span class="n">B1</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-4-62"><a id="__codelineno-4-62" name="__codelineno-4-62" href="#__codelineno-4-62"></a>
+</span><span id="__span-4-63"><a id="__codelineno-4-63" name="__codelineno-4-63" href="#__codelineno-4-63"></a><span class="w">                </span><span class="n">B2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1rq_f32</span><span class="p">(</span><span class="n">svptrue_b32</span><span class="p">(),</span><span class="w"> </span><span class="n">B</span><span class="o">+</span><span class="n">b_idx</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">k</span><span class="p">);</span>
+</span><span id="__span-4-64"><a id="__codelineno-4-64" name="__codelineno-4-64" href="#__codelineno-4-64"></a><span class="w">                </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="n">A0</span><span class="p">,</span><span class="n">B2</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-4-65"><a id="__codelineno-4-65" name="__codelineno-4-65" href="#__codelineno-4-65"></a><span class="w">                </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="n">A1</span><span class="p">,</span><span class="n">B2</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-4-66"><a id="__codelineno-4-66" name="__codelineno-4-66" href="#__codelineno-4-66"></a><span class="w">                </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="n">A2</span><span class="p">,</span><span class="n">B2</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-4-67"><a id="__codelineno-4-67" name="__codelineno-4-67" href="#__codelineno-4-67"></a><span class="w">                </span><span class="n">C2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C2</span><span class="p">,</span><span class="n">A3</span><span class="p">,</span><span class="n">B2</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-4-68"><a id="__codelineno-4-68" name="__codelineno-4-68" href="#__codelineno-4-68"></a>
+</span><span id="__span-4-69"><a id="__codelineno-4-69" name="__codelineno-4-69" href="#__codelineno-4-69"></a><span class="w">                </span><span class="n">B3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svld1rq_f32</span><span class="p">(</span><span class="n">svptrue_b32</span><span class="p">(),</span><span class="w"> </span><span class="n">B</span><span class="o">+</span><span class="n">b_idx</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">k</span><span class="p">);</span>
+</span><span id="__span-4-70"><a id="__codelineno-4-70" name="__codelineno-4-70" href="#__codelineno-4-70"></a><span class="w">                </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="n">A0</span><span class="p">,</span><span class="n">B3</span><span class="p">,</span><span class="mi">0</span><span class="p">);</span>
+</span><span id="__span-4-71"><a id="__codelineno-4-71" name="__codelineno-4-71" href="#__codelineno-4-71"></a><span class="w">                </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="n">A1</span><span class="p">,</span><span class="n">B3</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-4-72"><a id="__codelineno-4-72" name="__codelineno-4-72" href="#__codelineno-4-72"></a><span class="w">                </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="n">A2</span><span class="p">,</span><span class="n">B3</span><span class="p">,</span><span class="mi">2</span><span class="p">);</span>
+</span><span id="__span-4-73"><a id="__codelineno-4-73" name="__codelineno-4-73" href="#__codelineno-4-73"></a><span class="w">                </span><span class="n">C3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">svmla_lane_f32</span><span class="p">(</span><span class="n">C3</span><span class="p">,</span><span class="n">A3</span><span class="p">,</span><span class="n">B3</span><span class="p">,</span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-4-74"><a id="__codelineno-4-74" name="__codelineno-4-74" href="#__codelineno-4-74"></a><span class="w">            </span><span class="p">}</span>
+</span><span id="__span-4-75"><a id="__codelineno-4-75" name="__codelineno-4-75" href="#__codelineno-4-75"></a><span class="w">            </span><span class="c1">// compute base index for stores</span>
+</span><span id="__span-4-76"><a id="__codelineno-4-76" name="__codelineno-4-76" href="#__codelineno-4-76"></a><span class="w">            </span><span class="n">c_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">n</span><span class="o">*</span><span class="n">j_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i_idx</span><span class="p">;</span>
+</span><span id="__span-4-77"><a id="__codelineno-4-77" name="__codelineno-4-77" href="#__codelineno-4-77"></a><span class="w">            </span><span class="n">svst1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="o">+</span><span class="n">c_idx</span><span class="p">,</span><span class="w"> </span><span class="n">C0</span><span class="p">);</span>
+</span><span id="__span-4-78"><a id="__codelineno-4-78" name="__codelineno-4-78" href="#__codelineno-4-78"></a><span class="w">            </span><span class="n">svst1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="o">+</span><span class="n">c_idx</span><span class="o">+</span><span class="n">n</span><span class="p">,</span><span class="n">C1</span><span class="p">);</span>
+</span><span id="__span-4-79"><a id="__codelineno-4-79" name="__codelineno-4-79" href="#__codelineno-4-79"></a><span class="w">            </span><span class="n">svst1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="o">+</span><span class="n">c_idx</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="n">C2</span><span class="p">);</span>
+</span><span id="__span-4-80"><a id="__codelineno-4-80" name="__codelineno-4-80" href="#__codelineno-4-80"></a><span class="w">            </span><span class="n">svst1_f32</span><span class="p">(</span><span class="n">pred</span><span class="p">,</span><span class="w"> </span><span class="n">C</span><span class="o">+</span><span class="n">c_idx</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">n</span><span class="p">,</span><span class="n">C3</span><span class="p">);</span>
+</span><span id="__span-4-81"><a id="__codelineno-4-81" name="__codelineno-4-81" href="#__codelineno-4-81"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-4-82"><a id="__codelineno-4-82" name="__codelineno-4-82" href="#__codelineno-4-82"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-4-83"><a id="__codelineno-4-83" name="__codelineno-4-83" href="#__codelineno-4-83"></a><span class="p">}</span>
+</span></code></pre></div>
+This code is almost identical to the earlier Neon code except for the differing intrinsics, and in addition, thanks to predication, there is no longer a constraint on the number of rows of A. However, you must ensure that the number of columns of A and C, and both dimensions of B, are multiples of four because the predication used above does not account for this. Adding such further predication is possible but would reduce the clarity of this example.</p>
+<p>Comparing it with the C function and Neon functions, the SVE example:</p>
+<p>Uses WHILELT to determine the predicate for doing each iteration of the outer loop. This guarantees you have at least one element to do by the loop condition.
+Increments i_idx by CNTW (the number of 32-bit elements in a vector) to avoid hard-coding the number of elements calculated in an iteration of the outer loop.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["content.code.select", "content.code.copy", "content.code.annotate", "navigation.indexes"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.c8b220af.min.js"></script>
+      
+        <script src="../../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
