@@ -11,12 +11,10 @@ links:
 
 [mkdocs的官方文档](https://www.mkdocs.org).
 
-## Commands
 
-* `mkdocs new [dir-name]` - Create a new project.
-* `mkdocs serve` - Start the live-reloading docs server.
-* `mkdocs build` - Build the documentation site.
-* `mkdocs -h` - Print help message and exit.
+## 很好的博客
+1. https://www.armcvai.cn/2021-03-01/pytorch-structure-process.html
+2. https://www.zhihu.com/people/lemonround/answers
 
 
 
