@@ -2,3 +2,4 @@ nav:
   - Home: index.md
   - Blog: blog
   - Llama: Llama
+  - FedLearning: FedLearning

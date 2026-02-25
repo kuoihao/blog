@@ -28,7 +28,6 @@ theme:
     - content.code.copy
     - content.code.annotate 
     - navigation.indexes
-    # - navigation.tabs
 
 
 markdown_extensions:
@@ -48,6 +47,7 @@ markdown_extensions:
 plugins:
   - search
   - awesome-pages
+
 
 extra_javascript:
   - javascripts/mathjax.js

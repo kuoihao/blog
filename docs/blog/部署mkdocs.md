@@ -79,6 +79,17 @@ jobs:
 1. 注意标亮的这两行，加上这两行github page的构建才不会出错
 
 
+# 可以参考的文档
+
+[mkdocs的官方文档](https://www.mkdocs.org).
+
+
+## 很好的博客
+1. https://www.armcvai.cn/2021-03-01/pytorch-structure-process.html
+2. https://www.zhihu.com/people/lemonround/answers
+
+
+
 
 !!! info "参考网站"
 [mkdocs-material](https://squidfunk.github.io/mkdocs-material/)
